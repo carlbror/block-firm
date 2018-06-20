@@ -57,7 +57,7 @@ contract StockCompany{
     }
     function publishAnnualReport(uint256 _year, string _report, uint256 _profit, string _currency, uint256 _dividend, address _accountantAddress){
       if(msg.sender == president){
-        annualReports.push(AnnualReport(_year, _report, _profit, _currency, _dividend, _accountantAddress, false));
+        annualReports.push(AnnualReport(_year, _report, _currency, _profit, _dividend, _accountantAddress, false));
       }
     }
     function approveAnnualReport(uint256 _numberAnnualReports, bool _yesOrNo){
