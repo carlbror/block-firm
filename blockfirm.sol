@@ -13,16 +13,18 @@ contract StockCompany{
     struct AnnualReport{
       uint256 annualYear;
       string report;
-      string currency;
-      uint256 profit;
-      uint256 dividend;
+      string profit;
+      string dividend;
+      string etherExchangeRates;
       address accountant;
+      string shareHolders;
       bool approved;
     }
 
     string public name;
     string public symbol;
     address public president;
+    string public constitution;
     uint256 public capitalStock;
     uint256 public accountingMonth;
     uint256 public creationDate;
@@ -35,12 +37,13 @@ contract StockCompany{
 
     event Transfer(address indexed from, address indexed to, uint256 value);
 
-    function StockCompany(uint256 _capitalStock, string _name, string _symbol, address _president, uint256 _accountingMonth) public{
+    function StockCompany(uint256 _capitalStock, string _name, string _symbol, address _president, string _constitution, uint256 _accountingMonth) public{
         capitalStock = _capitalStock;
         balanceOf[msg.sender] = capitalStock;
         name = _name;
         symbol = _symbol;
         president = _president;
+        constitution = _constitution;
         accountingMonth = _accountingMonth;
         creationDate = now;
     }
@@ -55,9 +58,9 @@ contract StockCompany{
         problems.push(Problem(msg.sender, _problem, now));
       }
     }
-    function publishAnnualReport(uint256 _year, string _report, uint256 _profit, string _currency, uint256 _dividend, address _accountantAddress){
+    function publishAnnualReport(uint256 _year, string _report, string _profit, string _dividend, string _etherExchangeRates, address _accountantAddress, string _shareHolders){
       if(msg.sender == president){
-        annualReports.push(AnnualReport(_year, _report, _currency, _profit, _dividend, _accountantAddress, false));
+        annualReports.push(AnnualReport(_year, _report, _profit, _dividend, _etherExchangeRates, _accountantAddress, _shareHolders, false));
       }
     }
     function approveAnnualReport(uint256 _numberAnnualReports, bool _yesOrNo){
