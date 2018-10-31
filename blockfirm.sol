@@ -4,6 +4,7 @@ contract StockCompany{
   struct OtherId{
     string name;
     string id;
+    string system;
   }
   struct Accountant{
     address accountant;
@@ -31,7 +32,10 @@ contract StockCompany{
   string public constitution;
   uint256 public capitalStock;
   uint256 public accountingMonth;
-  uint256 public creationDate;
+
+  bool public closing;
+  bool public closed;
+  uint256 public closeDate;
 
   Accountant[] public accountants;
   Problem[] public problems;
@@ -50,49 +54,58 @@ contract StockCompany{
       president = _president;
       constitution = _constitution;
       accountingMonth = _accountingMonth;
-      creationDate = now;
   }
 
-  function addOtherId(string _name, string _id){
+  function addOtherId(string _name, string _id, string _system){
     require(msg.sender == president);
-    otherIds.push(OtherId(_name, _id));
+    otherIds.push(OtherId(_name, _id, _system));
   }
-
   function changeAccountant(address _accountant){
-    if(msg.sender == president){
-      accountants.push(Accountant(_accountant, now));
-    }
+    require(msg.sender == president);
+    accountants.push(Accountant(_accountant, now));
   }
   function publishProblem(string _problem, uint256 _accountantNumber){
-    if(msg.sender == accountants[_accountantNumber].accountant){
-      problems.push(Problem(msg.sender, _problem, now));
-    }
+    require(msg.sender == accountants[_accountantNumber].accountant);
+    problems.push(Problem(msg.sender, _problem, now));
   }
   function publishAnnualReport(uint256 _year, string _report, string _profit, string _dividend, string _etherExchangeRates, address _accountantAddress, string _shareHolders){
-    if(msg.sender == president){
-      annualReports.push(AnnualReport(_year, _report, _profit, _dividend, _etherExchangeRates, _accountantAddress, _shareHolders, false));
-    }
+    require(msg.sender == president);
+    annualReports.push(AnnualReport(_year, _report, _profit, _dividend, _etherExchangeRates, _accountantAddress, _shareHolders, false));
   }
   function approveAnnualReport(uint256 _numberAnnualReports, bool _yesOrNo){
-    if(msg.sender == annualReports[_numberAnnualReports].accountant){
-      annualReports[_numberAnnualReports].approved = _yesOrNo;
-    }
+    require(msg.sender == annualReports[_numberAnnualReports].accountant);
+    annualReports[_numberAnnualReports].approved = _yesOrNo;
   }
+  function startClosing(){
+    require(msg.sender == president);
+    closing = true;
+  }
+  function close(){
+    require(!!closing);
+    require(msg.sender == accountants[0].accountant);
+    closed = true;
+    closeDate = now;
+  }
+  function terminate(){
+    require(now > (closeDate + 60));
+    selfdestruct(president);
+  }
+
 
   function _transfer(address _from, address _to, uint _value) internal {
-      require(_to != 0x0);
-      require(balanceOf[_from] >= _value);
-      require(balanceOf[_to] + _value > balanceOf[_to]);
+    require(!closed);
+    require(_to != 0x0);
+    require(balanceOf[_from] >= _value);
+    require(balanceOf[_to] + _value > balanceOf[_to]);
 
-      uint previousBalances = balanceOf[_from] + balanceOf[_to];
+    uint previousBalances = balanceOf[_from] + balanceOf[_to];
 
-      balanceOf[_from] -= _value;
-      balanceOf[_to] += _value;
-      Transfer(_from, _to, _value);
+    balanceOf[_from] -= _value;
+    balanceOf[_to] += _value;
+    Transfer(_from, _to, _value);
 
-      assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
+    assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
   }
-
   function transfer(address _to, uint256 _value) public {
       _transfer(msg.sender, _to, _value);
   }
