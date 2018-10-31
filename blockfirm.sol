@@ -46,7 +46,7 @@ contract StockCompany{
 
   event Transfer(address indexed from, address indexed to, uint256 value);
 
-  function StockCompany(uint256 _capitalStock, string _name, string _symbol, address _president, string _constitution, uint256 _accountingMonth) public{
+  constructor(uint256 _capitalStock, string _name, string _symbol, address _president, string _constitution, uint256 _accountingMonth) public{
       capitalStock = _capitalStock;
       balanceOf[msg.sender] = capitalStock;
       name = _name;
@@ -56,41 +56,40 @@ contract StockCompany{
       accountingMonth = _accountingMonth;
   }
 
-  function addOtherId(string _name, string _id, string _system){
+  function addOtherId(string _name, string _id, string _system) public{
     require(msg.sender == president);
     otherIds.push(OtherId(_name, _id, _system));
   }
-  function changeAccountant(address _accountant){
+  function changeAccountant(address _accountant) public{
     require(msg.sender == president);
     accountants.push(Accountant(_accountant, now));
   }
-  function publishProblem(string _problem, uint256 _accountantNumber){
+  function publishProblem(string _problem, uint256 _accountantNumber) public{
     require(msg.sender == accountants[_accountantNumber].accountant);
     problems.push(Problem(msg.sender, _problem, now));
   }
-  function publishAnnualReport(uint256 _year, string _report, string _profit, string _dividend, string _etherExchangeRates, address _accountantAddress, string _shareHolders){
+  function publishAnnualReport(uint256 _year, string _report, string _profit, string _dividend, string _etherExchangeRates, address _accountantAddress, string _shareHolders) public{
     require(msg.sender == president);
     annualReports.push(AnnualReport(_year, _report, _profit, _dividend, _etherExchangeRates, _accountantAddress, _shareHolders, false));
   }
-  function approveAnnualReport(uint256 _numberAnnualReports, bool _yesOrNo){
+  function approveAnnualReport(uint256 _numberAnnualReports, bool _yesOrNo) public{
     require(msg.sender == annualReports[_numberAnnualReports].accountant);
     annualReports[_numberAnnualReports].approved = _yesOrNo;
   }
-  function startClosing(){
+  function startClosing() public{
     require(msg.sender == president);
     closing = true;
   }
-  function close(){
+  function close() public{
     require(!!closing);
     require(msg.sender == accountants[0].accountant);
     closed = true;
     closeDate = now;
   }
-  function terminate(){
-    require(now > (closeDate + 60));
+  function terminate() public{
+    require(now > (closeDate + 2592000));
     selfdestruct(president);
   }
-
 
   function _transfer(address _from, address _to, uint _value) internal {
     require(!closed);
@@ -102,7 +101,7 @@ contract StockCompany{
 
     balanceOf[_from] -= _value;
     balanceOf[_to] += _value;
-    Transfer(_from, _to, _value);
+    emit Transfer(_from, _to, _value);
 
     assert(balanceOf[_from] + balanceOf[_to] == previousBalances);
   }
