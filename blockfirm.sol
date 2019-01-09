@@ -58,16 +58,9 @@ contract StockCompany{
       creationDate = now;
   }
 
-  string public uno;
-  string public unodos;
-  string public unodostres;
-
   function addOtherId(string _name, string _id, string _system) public{
-    uno = _name;
     require(msg.sender == president);
-    unodos = _id;
     otherIds.push(OtherId(_name, _id, _system));
-    unodostres = _system;
   }
   function changeAccountant(address _accountant) public{
     require(msg.sender == president);
