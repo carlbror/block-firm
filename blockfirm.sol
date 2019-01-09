@@ -32,6 +32,7 @@ contract StockCompany{
   string public constitution;
   uint256 public capitalStock;
   uint256 public accountingMonth;
+  uint256 public creationDate;
 
   bool public closing;
   bool public closed;
@@ -54,11 +55,19 @@ contract StockCompany{
       president = _president;
       constitution = _constitution;
       accountingMonth = _accountingMonth;
+      creationDate = now;
   }
 
+  string public uno;
+  string public unodos;
+  string public unodostres;
+
   function addOtherId(string _name, string _id, string _system) public{
+    uno = _name;
     require(msg.sender == president);
+    unodos = _id;
     otherIds.push(OtherId(_name, _id, _system));
+    unodostres = _system;
   }
   function changeAccountant(address _accountant) public{
     require(msg.sender == president);
